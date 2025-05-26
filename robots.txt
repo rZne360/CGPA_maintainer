@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://rzne360.github.io/CGPA_maintainer/sitemap.xml

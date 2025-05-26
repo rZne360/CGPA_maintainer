@@ -2,109 +2,243 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>SGPA Calculator</title>
+  <title>SGPA Goal Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 500px;
-      margin: 40px auto;
-      background-color: #f7f9fc;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    :root {
+      --bg: #f4f8fb;
+      --card: #ffffff;
+      --text: #111;
+      --input-bg: #eee;
+      --success: #d1f7dc;
+      --error: #ffdada;
     }
-    input, button {
-      padding: 10px;
-      margin: 6px 0;
+
+    body.dark {
+      --bg: #1a1a1a;
+      --card: #2a2a2a;
+      --text: #f4f4f4;
+      --input-bg: #444;
+      --success: #214f30;
+      --error: #6c2c2c;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .toggle-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--input-bg);
+      border: none;
+      border-radius: 20px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 80px auto 20px;
+      background: var(--card);
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin-top: 16px;
+    }
+
+    input {
       width: 100%;
-      box-sizing: border-box;
+      padding: 12px;
+      margin-top: 8px;
+      border: none;
+      border-radius: 10px;
+      background-color: var(--input-bg);
+      color: var(--text);
       font-size: 16px;
     }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
     button {
-      cursor: pointer;
+      flex: 1;
+      padding: 12px;
       background-color: #007bff;
       color: white;
       border: none;
-      border-radius: 4px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
     }
+
     button:hover {
       background-color: #0056b3;
     }
-    h2 {
-      color: #333;
+
+    .reset-btn {
+      background-color: #6c757d;
     }
-    #result {
-      margin-top: 20px;
-      font-weight: bold;
-      font-size: 18px;
-      color: green;
+
+    .reset-btn:hover {
+      background-color: #5a6268;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: #007bff;
+      width: 0%;
+      border-radius: 4px;
+      margin-top: 16px;
+      transition: width 1s ease;
+    }
+
+    .result-box {
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 12px;
+      display: none;
+    }
+
+    .success {
+      background-color: var(--success);
+      color: #207144;
+    }
+
+    .error {
+      background-color: var(--error);
+      color: #9c2222;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+
+      .toggle-btn {
+        padding: 6px 10px;
+        font-size: 14px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
     }
   </style>
 </head>
 <body>
+  <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Dark</button>
 
-  <h1>SGPA to Reach Expected CGPA Calculator</h1>
+  <div class="container">
+    <h1>SGPA Goal Calculator</h1>
 
-  <label for="name">Student Name:</label>
-  <input type="text" id="name" placeholder="Enter your name" />
+    <label for="name">Student Name</label>
+    <input type="text" id="name" placeholder="Enter your name" />
 
-  <label for="sem">Number of Semesters Completed (1-7):</label>
-  <input type="number" id="sem" min="1" max="7" placeholder="Enter semesters completed" />
+    <label for="sem">Semesters Completed</label>
+    <input type="number" id="sem" min="1" max="7" placeholder="e.g., 4" />
 
-  <label for="currentCgpa">Current CGPA (all completed semesters):</label>
-  <input type="number" id="currentCgpa" min="0" max="10" step="0.01" placeholder="Enter current CGPA" />
+    <label for="currentCgpa">Current CGPA</label>
+    <input type="number" id="currentCgpa" min="0" max="10" step="0.01" placeholder="e.g., 7.5" />
 
-  <label for="expectedCgpa">Expected CGPA at end of 8 semesters:</label>
-  <input type="number" id="expectedCgpa" min="0" max="10" step="0.01" placeholder="Enter expected CGPA" />
+    <label for="expectedCgpa">Target CGPA</label>
+    <input type="number" id="expectedCgpa" min="0" max="10" step="0.01" placeholder="e.g., 8.2" />
 
-  <button onclick="calculateSGPA()">Calculate Required SGPA</button>
+    <div class="buttons">
+      <button onclick="calculateSGPA()">Calculate</button>
+      <button class="reset-btn" onclick="resetForm()">Reset</button>
+    </div>
 
-  <div id="result"></div>
+    <div class="progress-bar" id="progressBar"></div>
+
+    <div id="result" class="result-box"></div>
+  </div>
 
   <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark');
+      const toggleBtn = document.querySelector('.toggle-btn');
+      toggleBtn.textContent = document.body.classList.contains('dark') ? '☀️ Light' : '🌙 Dark';
+    }
+
+    function resetForm() {
+      document.getElementById('name').value = '';
+      document.getElementById('sem').value = '';
+      document.getElementById('currentCgpa').value = '';
+      document.getElementById('expectedCgpa').value = '';
+      document.getElementById('result').style.display = 'none';
+      document.getElementById('progressBar').style.width = '0%';
+    }
+
     function calculateSGPA() {
-      // Get values from inputs
       const name = document.getElementById('name').value.trim();
       const sem = parseInt(document.getElementById('sem').value);
       const currentCgpa = parseFloat(document.getElementById('currentCgpa').value);
       const expectedCgpa = parseFloat(document.getElementById('expectedCgpa').value);
-
       const resultDiv = document.getElementById('result');
+      const progressBar = document.getElementById('progressBar');
 
-      // Basic validation
+      resultDiv.style.display = "none";
+      progressBar.style.width = "0%";
+
       if (!name || isNaN(sem) || isNaN(currentCgpa) || isNaN(expectedCgpa)) {
-        resultDiv.style.color = 'red';
-        resultDiv.innerText = 'Please fill all fields with valid values.';
+        resultDiv.className = "result-box error";
+        resultDiv.innerText = "❌ Please fill all fields correctly.";
+        resultDiv.style.display = "block";
         return;
       }
 
-      if (sem < 1 || sem >= 8) {
-        resultDiv.style.color = 'red';
-        resultDiv.innerText = 'Semesters completed must be between 1 and 7.';
+      if (sem < 1 || sem >= 8 || currentCgpa < 0 || currentCgpa > 10 || expectedCgpa < 0 || expectedCgpa > 10) {
+        resultDiv.className = "result-box error";
+        resultDiv.innerText = "⚠️ Enter valid data. Sem: 1–7, CGPA: 0–10.";
+        resultDiv.style.display = "block";
         return;
       }
 
-      if (currentCgpa < 0 || currentCgpa > 10 || expectedCgpa < 0 || expectedCgpa > 10) {
-        resultDiv.style.color = 'red';
-        resultDiv.innerText = 'CGPA values must be between 0 and 10.';
-        return;
-      }
+      // Show progress animation
+      progressBar.style.width = "100%";
 
-      const remainingSem = 8 - sem;
+      setTimeout(() => {
+        const remainingSem = 8 - sem;
+        const requiredSGPA = ((expectedCgpa * 8) - (currentCgpa * sem)) / remainingSem;
 
-      // Formula: ((expectedCgpa * 8) - (currentCgpa * sem)) / remainingSem
-      const requiredSGPA = ((expectedCgpa * 8) - (currentCgpa * sem)) / remainingSem;
+        if (requiredSGPA > 10) {
+          resultDiv.className = "result-box error";
+          resultDiv.innerText = `🚫 ${name}, required SGPA is ${requiredSGPA.toFixed(2)} – not possible.`;
+        } else if (requiredSGPA < 0) {
+          resultDiv.className = "result-box success";
+          resultDiv.innerText = `🎉 ${name}, you've already surpassed your CGPA target!`;
+        } else {
+          resultDiv.className = "result-box success";
+          resultDiv.innerText = `✅ ${name}, you need an average SGPA of ${requiredSGPA.toFixed(2)} over the next ${remainingSem} semester(s) to reach your CGPA goal of ${expectedCgpa}.`;
+        }
 
-      if (requiredSGPA > 10) {
-        resultDiv.style.color = 'red';
-        resultDiv.innerText = `${name}, to reach your expected CGPA, you need an SGPA of ${requiredSGPA.toFixed(2)} in remaining semesters, which is not possible (max SGPA is 10). Consider revising your goals.`;
-      } else if (requiredSGPA < 0) {
-        resultDiv.style.color = 'green';
-        resultDiv.innerText = `${name}, congratulations! Your current CGPA already exceeds your target.`;
-      } else {
-        resultDiv.style.color = 'green';
-        resultDiv.innerText = `${name}, you need an average SGPA of ${requiredSGPA.toFixed(2)} in the remaining ${remainingSem} semester(s) to reach your expected CGPA of ${expectedCgpa}.`;
-      }
+        resultDiv.style.display = "block";
+      }, 1000);
     }
   </script>
 </body>
